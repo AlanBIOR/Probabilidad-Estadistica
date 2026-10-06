@@ -66,7 +66,8 @@ probabilidad_y_estadistica/
 │   └── index.html                     # Plantilla base semántica (HTML5)
 ├── app.py                             # API REST y servidor web Flask
 ├── requirements.txt                   # Dependencias de Python
-└── README.md '''
+└── README.md 
+```
 
 ## Instalación y Despliegue Local
 1. Clonar el repositorio y configurar el entorno virtual
