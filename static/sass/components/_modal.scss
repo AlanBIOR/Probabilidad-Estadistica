@@ -1,0 +1,25 @@
+@use "../abstracts/abstracts" as *;
+
+dialog {
+  margin: auto;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-title);
+  border-radius: $radius-md;
+  padding: 1.5rem;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+}

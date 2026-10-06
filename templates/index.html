@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análisis Estadístico - Centralidad y Variabilidad</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header__brand">
+        <div class="header__icon-box">
+          <!-- Icono vectorial de análisis / distribución -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/>
+            <path d="m19 9-5 5-4-4-3 3"/>
+          </svg>
+        </div>
+        <div class="header__text-group">
+          <div class="header__title-row">
+            <h1 class="header__title">Análisis Estadístico Descriptivo</h1>
+            <span class="header__badge">Data Studio</span>
+          </div>
+          <p class="header__subtitle">Medidas de centralidad, variabilidad y modelado de distribuciones</p>
+        </div>
+      </div>
+
+      <div class="header__actions">
+        <button id="themeToggle" class="header__theme-btn" type="button" aria-label="Cambiar tema">
+          <svg class="header__theme-icon header__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+          <span class="header__theme-label">Tema</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Selector de Pestañas de Entrada -->
+      <nav class="tabs" role="tablist">
+        <button class="tabs__btn tabs__btn--active" id="tabManualBtn" type="button" role="tab">Ingreso Manual (N datos)</button>
+        <button class="tabs__btn" id="tabFileBtn" type="button" role="tab">Carga de Base de Datos (.CSV / .TXT)</button>
+      </nav>
+
+      <!-- Panel Manual -->
+      <section id="panelManual" class="panel">
+        <div class="input-group">
+          <label for="inputN">Cantidad de muestras a ingresar (N):</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="number" id="inputN" min="1" max="500" placeholder="Ej. 10">
+            <button type="button" id="btnGenInputs" class="btn-primary" style="width: auto;">Generar Celdas</button>
+          </div>
+        </div>
+        <div id="dynamicInputs" class="dynamic-inputs panel--hidden"></div>
+      </section>
+
+      <!-- Panel Archivo (Procesamiento total automático) -->
+      <section id="panelFile" class="panel panel--hidden">
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="fileInput" accept=".csv, .txt" style="display: none;">
+          <p class="dropzone__text">Arrastra tu archivo <strong>.csv</strong> o <strong>.txt</strong> aquí o haz clic para explorar</p>
+        </div>
+        <p id="fileStatus" style="font-size: 0.85rem; color: var(--primary-hover); font-weight: 500;"></p>
+      </section>
+
+      <!-- Checklist de Métricas -->
+      <section class="panel metrics-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label style="color:var(--text-title); font-weight:600;">Métricas solicitadas:</label>
+          <button type="button" id="btnToggleAllMetrics" style="background:none; border:none; color:var(--primary-hover); cursor:pointer; font-size:0.8rem;">Desmarcar todos</button>
+        </div>
+        <div class="metrics-section__grid">
+          <label class="metrics-section__item">
+            <input type="checkbox" name="metric" value="mean" checked>
+            <span>Media Aritmética</span>
+          </label>
+          <label class="metrics-section__item">
+            <input type="checkbox" name="metric" value="harmonic" checked>
+            <span>Media Armónica</span>
+          </label>
+          <label class="metrics-section__item">
+            <input type="checkbox" name="metric" value="geometric" checked>
+            <span>Media Geométrica</span>
+          </label>
+          <label class="metrics-section__item">
+            <input type="checkbox" name="metric" value="mode" checked>
+            <span>Moda</span>
+          </label>
+          <label class="metrics-section__item">
+            <input type="checkbox" name="metric" value="quartiles" checked>
+            <span>Rango de Cuartiles & IQR</span>
+          </label>
+        </div>
+        <button type="button" id="btnCalculate" class="btn-primary">Ejecutar Análisis Completo</button>
+      </section>
+
+      <!-- Resumen General en Tabla (Aparece al procesar CSV) -->
+      <section id="summarySection" class="panel panel--hidden">
+        <h2 style="font-size: 1.1rem; color: var(--text-title);">Resumen Comparativo de Columnas</h2>
+        <div class="table-responsive">
+          <table class="data-table" id="summaryTable">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>N</th>
+                <th>Media</th>
+                <th>Mediana</th>
+                <th>Media Arm.</th>
+                <th>Media Geom.</th>
+                <th>IQR</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pestañas para alternar visualización de columna -->
+      <nav id="columnPills" class="tabs panel--hidden" style="overflow-x: auto; flex-wrap: wrap;"></nav>
+
+      <!-- Tarjetas de la Columna Activa -->
+      <section id="resultsContainer" class="results-grid"></section>
+
+      <!-- Gráfico de Distribución con Media -->
+      <section id="chartSection" class="chart-container panel--hidden">
+        <canvas id="statsChart"></canvas>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__glow-line"></div>
+      <div class="footer__content">
+        <div class="footer__info">
+          <p class="footer__course">Probabilidad y Estadística &bull; Model-Based Data Analytics</p>
+          <p class="footer__author">By <strong>Alan Alfonso Rodríguez Ibarra</strong></p>
+        </div>
+        <div class="footer__tags">
+          <span class="footer__tag">Python</span>
+          <span class="footer__tag">Flask</span>
+          <span class="footer__tag">NumPy</span>
+          <span class="footer__tag">Pandas</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal Accesible de Alertas -->
+  <dialog id="alertModal">
+    <h3 id="alertModalTitle" style="margin-bottom: 0.5rem; color: #ff6b6b;">Aviso</h3>
+    <p id="alertModalMessage" style="font-size: 0.9rem; color: var(--text-body);"></p>
+    <div class="modal-actions">
+      <button type="button" id="btnCloseAlert" class="btn-primary" style="width: auto;">Entendido</button>
+    </div>
+  </dialog>
+
+  <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

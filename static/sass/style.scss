@@ -1,8 +1,8 @@
-@use "./abstracts/abstracts";
-@use "./vendors/vendors";
-@use "./base/base";
-@use "./components/components";
-@use "./layout/layout";
-@use "./pages/pages";
-@use "./themes/themes";
-@use "settings";
+@forward "./abstracts/abstracts";
+@forward "./vendors/vendors";
+@forward "./base/base";
+@forward "./components/components";
+@forward "./layout/layout";
+@forward "./pages/pages";
+@forward "./themes/themes";
+@forward "settings";

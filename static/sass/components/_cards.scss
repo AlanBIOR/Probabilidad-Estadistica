@@ -1,0 +1,76 @@
+@use "../abstracts/abstracts" as *;
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: $radius-md;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: $transition-smooth;
+
+  &:hover {
+    border-color: var(--primary-hover);
+  }
+
+  &__title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-body);
+  }
+
+  &__val {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-title);
+  }
+
+  &__warn {
+    font-size: 0.75rem;
+    color: #ffb84d;
+    margin-top: 0.25rem;
+  }
+}
+
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: $radius-md;
+  padding: 1.25rem;
+  position: relative;
+  height: 350px;
+  width: 100%;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+
+  th, td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    color: var(--text-title);
+    background: var(--card);
+    font-weight: 600;
+  }
+
+  td {
+    color: var(--text-body);
+  }
+
+  tr:hover td {
+    background: var(--card-hover);
+  }
+}

@@ -1,9 +1,38 @@
-@use "../abstracts/variables" as *;
+@use "../abstracts/abstracts" as *;
 
-html * {
-    font-family: $roboto-font;
+:root {
+  --bg: #{$dark-bg};
+  --surface: #{$dark-surface};
+  --card: #{$dark-card};
+  --card-hover: #{$dark-card-hover};
+  --border: #{$dark-border};
+  --primary: #{$dark-primary};
+  --primary-hover: #{$dark-primary-hover};
+  --text-title: #{$dark-text-title};
+  --text-body: #{$dark-text-body};
 }
- 
+
+[data-theme="light"] {
+  --bg: #{$light-bg};
+  --surface: #{$light-surface};
+  --card: #{$light-card};
+  --card-hover: #{$light-card-hover};
+  --border: #{$light-border};
+  --primary: #{$light-primary};
+  --primary-hover: #{$light-primary-hover};
+  --text-title: #{$light-text-title};
+  --text-body: #{$light-text-body};
+}
+
 body {
-    overflow-x: hidden;
-} 
+  font-family: $roboto-font;
+  background-color: var(--bg);
+  color: var(--text-body);
+  min-height: 100vh;
+  padding: 1rem;
+  transition: $transition-smooth;
+
+  @include breakpoint(tablet) {
+    padding: 2rem 3rem;
+  }
+}

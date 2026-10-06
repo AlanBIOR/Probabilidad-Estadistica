@@ -1,0 +1,22 @@
+@use "../abstracts/abstracts" as *;
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  border-radius: $radius-sm;
+  font-weight: 700;
+  cursor: pointer;
+  transition: $transition-smooth;
+  width: 100%;
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

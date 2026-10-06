@@ -1,0 +1,27 @@
+@use "../abstracts/abstracts" as *;
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--surface);
+  padding: 0.35rem;
+  border-radius: $radius-md;
+  border: 1px solid var(--border);
+
+  &__btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-body);
+    padding: 0.75rem;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition-smooth;
+
+    &--active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+  }
+}
