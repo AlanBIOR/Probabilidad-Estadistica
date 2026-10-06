@@ -69,40 +69,57 @@ probabilidad_y_estadistica/
 └── README.md 
 ```
 
-## Instalación y Despliegue Local
-1. Clonar el repositorio y configurar el entorno virtual
+## 🚀 Instalación y Despliegue Local
 
-git clone [https://github.com/AlanBIOR/Probabilidad-Estadistica](https://github.com/AlanBIOR/Probabilidad-Estadistica)
+### 1. Clonar el repositorio y configurar el entorno virtual
+
+```bash
+git clone [https://github.com/AlanBIOR/Probabilidad-Estadistica.git](https://github.com/AlanBIOR/Probabilidad-Estadistica.git)
 cd probabilidad_y_estadistica
 
-# Crear y activar entorno virtual
+# Crear entorno virtual
 python -m venv venv
 
-# En Windows:
+# Activar en Windows:
 venv\Scripts\activate
-# En Linux/macOS:
+
+# Activar en Linux/macOS:
 source venv/bin/activate
+```
 
-2. Instalar dependencias de Python
+### 2. Instalar dependencias de Python
+
+```bash
 pip install -r requirements.txt
+```
 
-3. Compilación de estilos Sass
+### 3. Compilación de estilos Sass
+
 Si deseas modificar los archivos Sass, ejecuta el observador de Dart Sass:
+
+```bash
 sass --watch static/sass/style.scss static/css/style.css
+```
 
-4. Ejecución del servidor de desarrollo
+### 4. Ejecución del servidor de desarrollo
+
+```bash
 python app.py
+```
 
-bre tu navegador en http://127.0.0.1:5000/.
+Abre tu navegador en: [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
 
-Tecnologías Utilizadas
-Backend: Python 3, Flask, Pandas, NumPy.
+---
 
-Frontend: HTML5 semántico, Sass (Dart Sass), Vanilla JavaScript (ES Modules).
+## 🛠️ Tecnologías Utilizadas
 
-Visualización: Chart.js.
+- **Backend:** Python 3, Flask, Pandas, NumPy.
+- **Frontend:** HTML5 semántico, Sass (Dart Sass), Vanilla JavaScript (ES Modules).
+- **Visualización:** Chart.js.
 
-Autor
-Alan Alfonso Rodríguez Ibarra
+---
 
-Programa de Maestría en Sistemas Computacionales / Electrónica & Automatización
+## 👤 Autor
+
+- **Alan Alfonso Rodríguez Ibarra**
+  - *Programa de Maestría en Sistemas Computacionales / Electrónica & Automatización*
