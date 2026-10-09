@@ -1,76 +1,128 @@
 @use "../abstracts/abstracts" as *;
 
-.metric-card {
+.panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: $radius-md;
+  border-radius: $radius-panel;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
+  box-shadow: var(--card-shadow);
+  transition: $transition-smooth;
+
+  @include breakpoint(tablet) {
+    padding: 1.75rem;
+  }
+
+  &--hidden {
+    display: none !important;
+  }
+}
+
+// Tarjetas KPI con acento visual en los bordes
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--primary);
+  border-radius: $radius-card;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.65rem;
+  position: relative;
+  box-shadow: var(--card-shadow);
   transition: $transition-smooth;
 
   &:hover {
     border-color: var(--primary-hover);
+    transform: translateY(-2px);
   }
 
   &__title {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--text-body);
   }
 
   &__val {
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-size: 2.1rem;
+    font-weight: 800;
+    font-family: $font-family-mono;
     color: var(--text-title);
+    letter-spacing: -0.04em;
+    line-height: 1.1;
   }
 
   &__warn {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #ffb84d;
-    margin-top: 0.25rem;
+    background: rgba(255, 184, 77, 0.12);
+    border: 1px solid rgba(255, 184, 77, 0.3);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px 2px 6px 2px;
+    display: inline-block;
+  }
+
+  // Tarjeta de contraste destacado (Sesgo / Distribución)
+  &:first-child {
+    background: var(--contrast-card);
+    border-top-color: var(--primary-hover);
+
+    .metric-card__val {
+      color: var(--primary-hover);
+    }
   }
 }
 
 .chart-container {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: $radius-md;
-  padding: 1.25rem;
+  border-radius: $radius-panel;
+  padding: 1.5rem;
   position: relative;
-  height: 350px;
+  height: 380px;
   width: 100%;
+  box-shadow: var(--card-shadow);
 }
 
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  border-radius: $radius-card;
+  border: 1px solid var(--border);
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
 
   th, td {
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1.15rem;
     border-bottom: 1px solid var(--border);
   }
 
   th {
     color: var(--text-title);
     background: var(--card);
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
   }
 
   td {
     color: var(--text-body);
+    font-family: $font-family-mono;
   }
 
   tr:hover td {
     background: var(--card-hover);
+    color: var(--text-title);
   }
 }

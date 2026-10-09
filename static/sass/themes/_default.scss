@@ -10,6 +10,8 @@
   --primary-hover: #{$dark-primary-hover};
   --text-title: #{$dark-text-title};
   --text-body: #{$dark-text-body};
+  --contrast-card: #{$dark-contrast-card};
+  --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
 [data-theme="light"] {
@@ -22,17 +24,6 @@
   --primary-hover: #{$light-primary-hover};
   --text-title: #{$light-text-title};
   --text-body: #{$light-text-body};
-}
-
-body {
-  font-family: $roboto-font;
-  background-color: var(--bg);
-  color: var(--text-body);
-  min-height: 100vh;
-  padding: 1rem;
-  transition: $transition-smooth;
-
-  @include breakpoint(tablet) {
-    padding: 2rem 3rem;
-  }
+  --contrast-card: #{$light-contrast-card};
+  --card-shadow: 0 8px 24px rgba(61, 99, 221, 0.08);
 }

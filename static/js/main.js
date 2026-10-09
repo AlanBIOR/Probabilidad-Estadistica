@@ -1,9 +1,19 @@
+/**
+ * main.js - Orquestador principal de Data Studio
+ */
 import { initTheme } from "./modules/theme.js";
-import { initTabs } from "./modules/tabs.js";
+import { initTabs, switchView } from "./modules/tabs.js";
 import { initDataInputs, getPayload } from "./modules/dataInput.js";
 import { initMetrics, getSelectedMetrics } from "./modules/metrics.js";
 import { executeProcess } from "./modules/api.js";
-import { renderSummaryTable, renderColumnPills, renderColumnCards } from "./modules/render.js";
+import {
+  renderSummaryTable,
+  renderColumnPills,
+  renderColumnCards,
+  renderCovarianceMatrix,
+  renderBivariateScatter,
+  updateScatterTheme
+} from "./modules/render.js";
 import { renderDistributionChart, updateChartTheme } from "./modules/chartManager.js";
 import { showAlert } from "./modules/modal.js";
 
@@ -13,11 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const chartCanvas = document.getElementById("statsChart");
   const btnCalculate = document.getElementById("btnCalculate");
 
-  let currentTab = "manual";
+  let currentTab = "file";
   let datasetResults = null;
   let activeColumn = null;
 
-  initTheme((isDark) => updateChartTheme(isDark));
+  // Sincronizar tema en ambos gráficos (Histograma + Dispersión)
+  initTheme((isDark) => {
+    updateChartTheme(isDark);
+    updateScatterTheme(isDark);
+  });
+
   initTabs((tab) => { currentTab = tab; });
   initDataInputs();
   initMetrics();
@@ -25,12 +40,14 @@ document.addEventListener("DOMContentLoaded", () => {
   btnCalculate.addEventListener("click", async () => {
     const metrics = getSelectedMetrics();
     if (!metrics.length) {
-      showAlert("Selecciona al menos una métrica para calcular.");
+      showAlert("Selecciona al menos una métrica para calcular.", "Aviso");
       return;
     }
 
     const payloadObj = getPayload(currentTab, metrics);
     if (!payloadObj) return;
+
+    const analysisType = document.querySelector('input[name="analysisType"]:checked')?.value || "descriptive";
 
     try {
       btnCalculate.disabled = true;
@@ -40,18 +57,38 @@ document.addEventListener("DOMContentLoaded", () => {
       datasetResults = res.data;
       activeColumn = res.columns[0];
 
-      // 1. Mostrar tabla resumen general
+      // 1. Llenar módulo descriptivo
       renderSummaryTable(datasetResults);
-
-      // 2. Mostrar selector de columnas y vista detallada
       renderColumnView(res.columns, activeColumn);
+      if (chartSection) {
+        chartSection.classList.remove("panel--hidden");
+        chartSection.dataset.hasData = "true";
+      }
 
-      chartSection.classList.remove("panel--hidden");
+      // 2. Llenar módulo de covarianza y dispersión
+      if (res.covariance) {
+        renderCovarianceMatrix(res.covariance);
+      }
+      if (res.bivariate) {
+        renderBivariateScatter(res.bivariate);
+      }
+
+      // 3. Redirección automática al apartado correspondiente
+      if (analysisType === "covariance") {
+        if (!res.covariance) {
+          showAlert("Se requieren al menos 2 variables numéricas para calcular la covarianza. Mostrando vista descriptiva.", "Aviso");
+          switchView("descriptive");
+        } else {
+          switchView("covariance");
+        }
+      } else {
+        switchView("descriptive");
+      }
     } catch (err) {
       showAlert(err.message, "Error en el Análisis");
     } finally {
       btnCalculate.disabled = false;
-      btnCalculate.textContent = "Ejecutar Análisis Completo";
+      btnCalculate.textContent = "Ejecutar Análisis y Ver Resultados";
     }
   });
 
@@ -65,7 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderColumnCards(colData, resultsContainer);
 
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    renderDistributionChart(chartCanvas, colData.chart, isDark);
+    const isDark = (document.documentElement.getAttribute("data-theme") || "dark") === "dark";
+    if (chartCanvas && colData.chart) {
+      renderDistributionChart(chartCanvas, colData.chart, isDark);
+    }
   }
 });

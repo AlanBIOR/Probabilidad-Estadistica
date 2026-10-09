@@ -1,0 +1,181 @@
+@use "../abstracts/abstracts" as *;
+
+.sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.85rem 1.25rem;
+  width: 100%;
+
+  @include breakpoint(desktop) {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 250px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+    padding: 1.75rem 1.25rem;
+    flex-shrink: 0;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+
+    @include breakpoint(desktop) {
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  &__logo-icon {
+    @include flex-center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px 3px 12px 3px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--primary);
+  }
+
+  &__brand-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-title);
+    letter-spacing: 0.06em;
+  }
+
+  &__brand-subtitle {
+    display: none;
+    font-size: 0.68rem;
+    color: var(--text-body);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    @include breakpoint(desktop) {
+      display: block;
+    }
+  }
+
+  &__section-label {
+    display: none;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-body);
+    margin: 1.5rem 0 0.5rem 0.5rem;
+
+    @include breakpoint(desktop) {
+      display: block;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    @include breakpoint(desktop) {
+      flex-direction: column;
+      align-items: stretch;
+      flex: 1;
+    }
+  }
+
+  &__nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.95rem;
+    border-radius: $radius-btn;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition-smooth;
+
+    span {
+      display: none;
+      color: inherit;
+      @include breakpoint(tablet) {
+        display: inline;
+      }
+    }
+
+    svg {
+      stroke: currentColor;
+    }
+
+    &:hover:not(&--active) {
+      background: var(--card-hover);
+      color: var(--text-title);
+      border-color: var(--primary-hover);
+    }
+
+    // ALTO CONTRASTE FORZADO PARA MODO OSCURO Y MODO CLARO
+    &--active {
+      background: var(--primary) !important;
+      color: #ffffff !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 4px 14px rgba(59, 102, 172, 0.35);
+
+      span {
+        color: #ffffff !important;
+      }
+
+      svg {
+        stroke: #ffffff !important;
+      }
+    }
+  }
+
+  &__footer {
+    display: none;
+
+    @include breakpoint(desktop) {
+      display: block;
+    }
+  }
+
+  &__user-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: $radius-card;
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+
+  &__user-avatar {
+    @include flex-center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px 2px 8px 2px;
+    background: var(--primary);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  &__user-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-title);
+    display: block;
+  }
+
+  &__user-role {
+    font-size: 0.7rem;
+    color: var(--text-body);
+  }
+}

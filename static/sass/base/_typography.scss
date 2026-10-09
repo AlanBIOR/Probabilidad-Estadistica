@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap");
+
+h1, h2, h3, h4 {
+  color: var(--text-title);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p, span, label {
+  color: var(--text-body);
+}

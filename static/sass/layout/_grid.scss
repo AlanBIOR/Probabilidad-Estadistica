@@ -1,12 +1,51 @@
 @use "../abstracts/abstracts" as *;
 
-.container {
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+
+  @include breakpoint(desktop) {
+    flex-direction: row;
+  }
+}
+
+.main-wrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+
+  @include breakpoint(tablet) {
+    padding: 1.75rem 2.25rem;
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bento-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @include breakpoint(desktop) {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+.bento-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .results-grid {
@@ -15,6 +54,10 @@
   gap: 1rem;
 
   @include breakpoint(tablet) {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include breakpoint(desktop) {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

@@ -3,20 +3,62 @@
 .btn-primary {
   background: var(--primary);
   color: #ffffff;
-  border: none;
-  padding: 0.85rem 1.5rem;
-  border-radius: $radius-sm;
+  border: 1px solid transparent;
+  padding: 0.75rem 1.4rem;
+  border-radius: $radius-btn;
+  font-family: $font-family-base;
+  font-size: 0.82rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: $transition-smooth;
   width: 100%;
 
   &:hover {
     background: var(--primary-hover);
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(59, 102, 172, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text-title);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1.3rem;
+  border-radius: $radius-btn;
+  font-family: $font-family-base;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: $transition-smooth;
+
+  svg {
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background: var(--card-hover);
+    border-color: var(--primary-hover);
+    color: var(--primary-hover);
+    transform: translateY(-2px);
   }
 }

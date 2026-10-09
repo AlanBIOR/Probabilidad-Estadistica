@@ -1,125 +1,147 @@
 @use "../abstracts/abstracts" as *;
 
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: $radius-md;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.analysis-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
 
-  &--hidden {
-    display: none;
+  @include breakpoint(tablet) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.analysis-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: var(--card);
+  border: 2px solid var(--border);
+  padding: 1.15rem;
+  border-radius: $radius-card;
+  cursor: pointer;
+  transition: $transition-smooth;
+
+  input[type="radio"] {
+    accent-color: var(--primary);
+    width: 18px;
+    height: 18px;
+    margin-top: 0.15rem;
+    cursor: pointer;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  &__title {
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: var(--text-title);
+  }
+
+  &__desc {
+    font-size: 0.76rem;
+    color: var(--text-body);
+    line-height: 1.35;
+  }
+
+  &:hover {
+    border-color: var(--primary-hover);
+    background: var(--card-hover);
+  }
+
+  &--active,
+  &:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--card-hover);
+    box-shadow: 0 4px 18px rgba(59, 102, 172, 0.2);
   }
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
 
   label {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: var(--text-title);
   }
 
-  input[type="number"], input[type="text"] {
+  input[type="number"],
+  input[type="text"] {
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text-title);
-    padding: 0.75rem;
-    border-radius: $radius-sm;
+    padding: 0.75rem 1.15rem;
+    border-radius: $radius-btn;
     outline: none;
+    font-family: $font-family-mono;
+    font-size: 0.9rem;
     transition: $transition-smooth;
 
     &:focus {
       border-color: var(--primary-hover);
+      box-shadow: 0 0 0 2px rgba(140, 183, 252, 0.2);
     }
   }
 }
 
 .dynamic-inputs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 0.5rem;
-  max-height: 250px;
+  max-height: 240px;
   overflow-y: auto;
-  padding: 0.5rem;
+  padding: 0.85rem;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: $radius-sm;
+  border-radius: $radius-card;
 
   input {
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text-title);
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: 6px 2px 6px 2px;
     text-align: center;
+    font-family: $font-family-mono;
+    font-size: 0.85rem;
+    outline: none;
 
     &:focus {
       border-color: var(--primary-hover);
-      outline: none;
     }
   }
 }
 
 .dropzone {
   border: 2px dashed var(--border);
-  border-radius: $radius-md;
-  padding: 2rem 1rem;
+  border-radius: $radius-card;
+  padding: 2.25rem 1.25rem;
   text-align: center;
   cursor: pointer;
   background: var(--card);
   transition: $transition-smooth;
 
-  &:hover, &--dragover {
+  &:hover,
+  &--dragover {
     border-color: var(--primary-hover);
     background: var(--card-hover);
   }
 
   &__text {
+    font-size: 0.88rem;
     color: var(--text-body);
-    font-size: 0.9rem;
-    strong { color: var(--text-title); }
-  }
-}
 
-.metrics-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-
-    @include breakpoint(tablet) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  &__item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 0.6rem 0.8rem;
-    border-radius: $radius-sm;
-    cursor: pointer;
-    user-select: none;
-
-    input {
-      accent-color: var(--primary);
-    }
-
-    span {
-      font-size: 0.85rem;
+    strong {
       color: var(--text-title);
+      font-weight: 700;
     }
   }
 }

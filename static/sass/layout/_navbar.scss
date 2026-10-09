@@ -2,26 +2,49 @@
 
 .tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: var(--surface);
-  padding: 0.35rem;
-  border-radius: $radius-md;
+  padding: 0.4rem;
+  border-radius: $radius-card;
   border: 1px solid var(--border);
+  overflow-x: auto;
 
   &__btn {
     flex: 1;
+    min-width: 150px;
     background: transparent;
     border: none;
     color: var(--text-body);
-    padding: 0.75rem;
-    border-radius: $radius-sm;
-    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: $radius-btn;
+    font-family: $font-family-base;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
     transition: $transition-smooth;
+
+    &:hover:not(&--active) {
+      color: var(--text-title);
+      background: var(--card);
+    }
 
     &--active {
       background: var(--primary);
       color: #ffffff;
+      border: 1px solid var(--primary-hover);
+      box-shadow: 0 4px 14px rgba(59, 102, 172, 0.35);
     }
   }
+}
+
+#columnPills {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+  border-radius: $radius-card;
+  gap: 0.5rem;
 }

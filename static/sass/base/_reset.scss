@@ -3,3 +3,12 @@
   margin: 0;
   padding: 0;
 }
+
+html {
+  color-scheme: dark light;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}

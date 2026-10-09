@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Data Studio — Probabilidad y Estadística{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+    {% include 'partials/_navbar.html' %}
+    
+    <div class="main-wrapper">
+      {% include 'partials/_header.html' %}
+
+      {% block content %}{% endblock %}
+
+      {% include 'partials/_footer.html' %}
+    </div>
+  </div>
+
+  {% include 'partials/_modal.html' %}
+
+  <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

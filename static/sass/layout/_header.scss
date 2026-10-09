@@ -1,15 +1,14 @@
 @use "../abstracts/abstracts" as *;
 
 .header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: $radius-panel;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  padding: 1.25rem 1.5rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: $radius-lg;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  transition: $transition-smooth;
+  box-shadow: var(--card-shadow);
 
   @include breakpoint(tablet) {
     flex-direction: row;
@@ -24,18 +23,6 @@
     gap: 1rem;
   }
 
-  &__icon-box {
-    @include flex-center;
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
-    border-radius: $radius-md;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--primary-hover);
-    box-shadow: inset 0 0 12px rgba(59, 102, 172, 0.2);
-  }
-
   &__text-group {
     display: flex;
     flex-direction: column;
@@ -45,15 +32,15 @@
   &__title-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
     flex-wrap: wrap;
   }
 
   &__title {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--text-title);
+    font-size: 1.25rem;
+    font-weight: 800;
     letter-spacing: -0.02em;
+    color: var(--text-title);
 
     @include breakpoint(tablet) {
       font-size: 1.65rem;
@@ -61,21 +48,26 @@
   }
 
   &__badge {
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-family: $font-family-mono;
+    font-size: 0.65rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    background: rgba(59, 102, 172, 0.2);
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.75rem;
+    border-radius: $radius-chip;
+    background: var(--card);
     border: 1px solid var(--border);
     color: var(--primary-hover);
   }
 
   &__subtitle {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-body);
-    line-height: 1.3;
+    line-height: 1.35;
+
+    @include breakpoint(tablet) {
+      font-size: 0.88rem;
+    }
   }
 
   &__actions {
@@ -86,30 +78,30 @@
   &__theme-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text-title);
-    padding: 0.55rem 1rem;
-    border-radius: $radius-md;
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border-radius: $radius-btn;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     cursor: pointer;
     transition: $transition-smooth;
+    width: 100%;
+
+    @include breakpoint(tablet) {
+      width: auto;
+    }
 
     &:hover {
       background: var(--card-hover);
       border-color: var(--primary-hover);
       color: var(--primary-hover);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
-
-  &__theme-icon {
-    stroke-width: 2.2;
   }
 }
