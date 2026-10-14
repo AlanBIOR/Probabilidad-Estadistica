@@ -11,11 +11,18 @@ import {
   renderColumnPills,
   renderColumnCards,
   renderCovarianceMatrix,
-  renderBivariateScatter,
+  renderAllBivariatePlots,
   updateScatterTheme
 } from "./modules/render.js";
 import { renderDistributionChart, updateChartTheme } from "./modules/chartManager.js";
 import { showAlert } from "./modules/modal.js";
+import {
+  guardarAnalisisLocal,
+  obtenerAnalisisLocal,
+  limpiarAnalisisLocal,
+  guardarVistaActiva,
+  obtenerVistaActiva
+} from "./modules/storage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const resultsContainer = document.getElementById("resultsContainer");
@@ -27,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let datasetResults = null;
   let activeColumn = null;
 
-  // Sincronizar tema en ambos gráficos (Histograma + Dispersión)
   initTheme((isDark) => {
     updateChartTheme(isDark);
     updateScatterTheme(isDark);
@@ -36,6 +42,33 @@ document.addEventListener("DOMContentLoaded", () => {
   initTabs((tab) => { currentTab = tab; });
   initDataInputs();
   initMetrics();
+
+  // Restaurar estado al recargar o cambiar de tema
+  restaurarEstadoPrevio();
+
+  function restaurarEstadoPrevio() {
+    const cache = obtenerAnalisisLocal();
+    if (!cache) return;
+
+    if (cache.analysis_type === "covariance") {
+      renderCovarianceMatrix(cache.covariance);
+      if (cache.bivariate_pairs) {
+        renderAllBivariatePlots(cache.bivariate_pairs);
+      }
+      switchView(obtenerVistaActiva() === "covariance" ? "covariance" : "dashboard");
+    } else if (cache.analysis_type === "descriptive" && cache.data) {
+      datasetResults = cache.data;
+      activeColumn = cache.columns[0];
+
+      renderSummaryTable(datasetResults);
+      renderColumnView(cache.columns, activeColumn);
+      if (chartSection) {
+        chartSection.classList.remove("panel--hidden");
+        chartSection.dataset.hasData = "true";
+      }
+      switchView(obtenerVistaActiva() === "descriptive" ? "descriptive" : "dashboard");
+    }
+  }
 
   btnCalculate.addEventListener("click", async () => {
     const metrics = getSelectedMetrics();
@@ -47,48 +80,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const payloadObj = getPayload(currentTab, metrics);
     if (!payloadObj) return;
 
-    const analysisType = document.querySelector('input[name="analysisType"]:checked')?.value || "descriptive";
+    // Adjuntar el tema actual a la petición
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+    if (payloadObj.isFile) {
+      payloadObj.body.append("theme", currentTheme);
+    } else {
+      payloadObj.body.theme = currentTheme;
+    }
 
     try {
       btnCalculate.disabled = true;
       btnCalculate.textContent = "Procesando...";
 
       const res = await executeProcess(payloadObj.body, payloadObj.isFile);
-      datasetResults = res.data;
-      activeColumn = res.columns[0];
+      guardarAnalisisLocal(res);
 
-      // 1. Llenar módulo descriptivo
-      renderSummaryTable(datasetResults);
-      renderColumnView(res.columns, activeColumn);
-      if (chartSection) {
-        chartSection.classList.remove("panel--hidden");
-        chartSection.dataset.hasData = "true";
-      }
-
-      // 2. Llenar módulo de covarianza y dispersión
-      if (res.covariance) {
+      if (res.analysis_type === "covariance") {
         renderCovarianceMatrix(res.covariance);
-      }
-      if (res.bivariate) {
-        renderBivariateScatter(res.bivariate);
-      }
-
-      // 3. Redirección automática al apartado correspondiente
-      if (analysisType === "covariance") {
-        if (!res.covariance) {
-          showAlert("Se requieren al menos 2 variables numéricas para calcular la covarianza. Mostrando vista descriptiva.", "Aviso");
-          switchView("descriptive");
-        } else {
-          switchView("covariance");
+        if (res.bivariate_pairs) {
+          renderAllBivariatePlots(res.bivariate_pairs);
         }
+        guardarVistaActiva("covariance");
+        switchView("covariance");
       } else {
+        datasetResults = res.data;
+        activeColumn = res.columns[0];
+
+        renderSummaryTable(datasetResults);
+        renderColumnView(res.columns, activeColumn);
+        if (chartSection) {
+          chartSection.classList.remove("panel--hidden");
+          chartSection.dataset.hasData = "true";
+        }
+        guardarVistaActiva("descriptive");
         switchView("descriptive");
       }
     } catch (err) {
       showAlert(err.message, "Error en el Análisis");
     } finally {
       btnCalculate.disabled = false;
-      btnCalculate.textContent = "Ejecutar Análisis y Ver Resultados";
+      btnCalculate.textContent = "EJECUTAR ANÁLISIS Y VER RESULTADOS";
     }
   });
 
@@ -106,5 +137,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chartCanvas && colData.chart) {
       renderDistributionChart(chartCanvas, colData.chart, isDark);
     }
+  }
+
+  const btnReset = document.getElementById("btnResetData");
+  if (btnReset) {
+    btnReset.addEventListener("click", () => {
+      limpiarAnalisisLocal();
+      location.reload();
+    });
   }
 });

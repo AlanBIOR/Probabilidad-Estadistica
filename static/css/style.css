@@ -172,11 +172,33 @@ body {
   display: inline-block;
 }
 .metric-card:first-child {
-  background: var(--contrast-card);
-  border-top-color: var(--primary-hover);
+  background: var(--card);
+  border-color: var(--border);
 }
-.metric-card:first-child .metric-card__val {
-  color: var(--primary-hover);
+.metric-card__title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-body);
+}
+.metric-card__val {
+  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-title);
+  letter-spacing: -0.02em;
+}
+.metric-card__warn {
+  font-size: 0.72rem;
+  color: #ffaa00;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-hover);
+  box-shadow: 0 8px 22px rgba(59, 102, 172, 0.15);
 }
 
 .chart-container {
@@ -513,11 +535,57 @@ dialog .modal-actions {
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .analysis-card input[type=radio] {
-  accent-color: var(--primary);
+  appearance: none;
+  -webkit-appearance: none;
   width: 18px;
   height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
   margin-top: 0.15rem;
+  outline: none;
+  background: var(--surface);
   cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.analysis-card input[type=radio]::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  background: var(--primary);
+}
+.analysis-card input[type=radio]:checked {
+  border-color: var(--primary);
+}
+.analysis-card input[type=radio]:checked::before {
+  transform: scale(1);
+}
+.analysis-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.analysis-card__title {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-title);
+}
+.analysis-card__desc {
+  font-size: 0.76rem;
+  color: var(--text-body);
+  line-height: 1.35;
+}
+.analysis-card:hover {
+  border-color: var(--primary-hover);
+  background: var(--card-hover);
+}
+.analysis-card--active, .analysis-card:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--card-hover);
 }
 .analysis-card__content {
   display: flex;

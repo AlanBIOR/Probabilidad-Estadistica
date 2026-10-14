@@ -4,48 +4,29 @@
 <main class="main-content">
 
   <!-- ==========================================
-       VISTA 1: DASHBOARD (ZONA DE CARGA Y CONFIGURACIÓN)
+       VISTA 1: DASHBOARD (ZONA DE ENTRADA Y SELECCIÓN)
        ========================================== -->
   <section id="dashboardSection" class="view-section">
     <div class="panel">
       
-      <!-- Pestañas de entrada -->
-      <nav class="tabs" role="tablist">
-        <button class="tabs__btn tabs__btn--active" id="tabFileBtn" type="button" role="tab">Carga de Archivo (.CSV / .TXT)</button>
-        <button class="tabs__btn" id="tabManualBtn" type="button" role="tab">Ingreso Manual (N datos)</button>
-      </nav>
-
-      <!-- Panel Carga de Archivo (Por defecto) -->
-      <div id="panelFile" class="input-panel" style="margin-top: 1.25rem;">
-        <div id="dropzone" class="dropzone">
-          <input type="file" id="fileInput" accept=".csv, .txt" style="display: none;">
-          <p class="dropzone__text">Arrastra tu archivo <strong>.csv</strong> o <strong>.txt</strong> aquí o haz clic para explorar</p>
-        </div>
-        <p id="fileStatus" style="font-size: 0.85rem; color: var(--primary-hover); font-weight: 600; margin-top: 0.5rem;"></p>
-      </div>
-
-      <!-- Panel Manual -->
-      <div id="panelManual" class="input-panel panel--hidden" style="margin-top: 1.25rem;">
-        <div class="input-group">
-          <label for="inputN">Cantidad de muestras a ingresar (N):</label>
-          <div style="display: flex; gap: 0.65rem;">
-            <input type="number" id="inputN" min="1" max="500" placeholder="Ej. 18">
-            <button type="button" id="btnGenInputs" class="btn-primary" style="width: auto; padding: 0.75rem 1.4rem;">Generar Celdas</button>
-          </div>
-        </div>
-        <div id="dynamicInputs" class="dynamic-inputs panel--hidden" style="margin-top: 0.75rem;"></div>
-      </div>
-
-      <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
-
-      <!-- Selector de Tipo de Análisis -->
+      <!-- PARTE 1: TIPO DE ANÁLISIS & BOTÓN DE MÉTRICAS -->
       <div class="analysis-type-selector">
-        <label style="color: var(--text-title); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.75rem;">
-          Selecciona el tipo de análisis a ejecutar:
-        </label>
-        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <label style="color: var(--text-title); font-weight: 800; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em;">
+            1. Selecciona el tipo de análisis a ejecutar:
+          </label>
+
+          <button type="button" id="btnOpenMetricsModal" class="btn-secondary" style="padding: 0.55rem 1rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span id="metricsBtnLabel">Configurar Métricas (9 activas)</span>
+          </button>
+        </div>
+
         <div class="analysis-cards-grid">
-          <label class="analysis-card analysis-card--active">
+          <label class="analysis-card analysis-card--active" id="cardOptDescriptive">
             <input type="radio" name="analysisType" value="descriptive" checked>
             <div class="analysis-card__content">
               <span class="analysis-card__title">1. Estadística Descriptiva Univariada</span>
@@ -53,7 +34,7 @@
             </div>
           </label>
 
-          <label class="analysis-card">
+          <label class="analysis-card" id="cardOptCovariance">
             <input type="radio" name="analysisType" value="covariance">
             <div class="analysis-card__content">
               <span class="analysis-card__title">2. Matriz de Covarianza Multivariada</span>
@@ -63,18 +44,69 @@
         </div>
       </div>
 
-      <!-- Acciones del Dashboard -->
-      <div class="dashboard-actions" style="margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
-        <button type="button" id="btnOpenMetricsModal" class="btn-secondary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-            <circle cx="12" cy="12" r="3"/>
-          </svg>
-          <span id="metricsBtnLabel">Configurar Métricas (9 activas)</span>
-        </button>
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
 
-        <button type="button" id="btnCalculate" class="btn-primary" style="flex: 1; max-width: 360px;">
-          Ejecutar Análisis y Ver Resultados
+      <!-- PARTE 2: FUENTE DE DATOS (ARCHIVO O ENTRADA MANUAL TABULAR) -->
+      <div class="data-input-wrapper">
+        <label style="color: var(--text-title); font-weight: 800; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.75rem;">
+          2. Fuente de datos:
+        </label>
+
+        <nav class="tabs" role="tablist">
+          <button class="tabs__btn tabs__btn--active" id="tabFileBtn" type="button" role="tab">Carga de Archivo (.CSV / .TXT)</button>
+          <button class="tabs__btn" id="tabManualBtn" type="button" role="tab">Ingreso Manual en Tabla</button>
+        </nav>
+
+        <!-- Pestaña 1: Dropzone de archivos -->
+        <div id="panelFile" class="input-panel" style="margin-top: 1.25rem;">
+          <div id="dropzone" class="dropzone">
+            <input type="file" id="fileInput" accept=".csv, .txt" style="display: none;">
+            <p class="dropzone__text">Arrastra tu archivo <strong>.csv</strong> o <strong>.txt</strong> aquí o haz clic para explorar</p>
+          </div>
+          <p id="fileStatus" style="font-size: 0.85rem; color: var(--primary-hover); font-weight: 600; margin-top: 0.5rem;"></p>
+        </div>
+
+        <!-- Pestaña 2: Editor Manual en Tabla interactiva -->
+        <div id="panelManual" class="input-panel panel--hidden" style="margin-top: 1.25rem;">
+          <div class="table-editor-controls" style="display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;">
+            <div class="input-group" style="width: 140px;">
+              <label for="inputCols">Columnas:</label>
+              <input type="number" id="inputCols" min="1" max="10" value="1">
+            </div>
+            <div class="input-group" style="width: 140px;">
+              <label for="inputRows">Filas (N):</label>
+              <input type="number" id="inputRows" min="2" max="100" value="5">
+            </div>
+            <button type="button" id="btnGenTable" class="btn-primary" style="width: auto; padding: 0.75rem 1.4rem;">
+              Construir Tabla
+            </button>
+            <button type="button" id="btnLoadExample" class="btn-secondary" style="width: auto; padding: 0.75rem 1.2rem;">
+              Cargar Ejemplo de Clase
+            </button>
+          </div>
+
+          <!-- Contenedor de la Tabla Editable -->
+          <div class="table-responsive" style="margin-top: 1rem; max-height: 320px;">
+            <table class="data-table" id="manualInputTable">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <!-- Opción alternativa rápida de pegado de texto -->
+          <details style="margin-top: 1rem; cursor: pointer;">
+            <summary style="font-size: 0.78rem; font-weight: 700; color: var(--primary-hover); text-transform: uppercase;">
+              O pegar directamente en bloque de texto
+            </summary>
+            <textarea id="manualRawTextarea" rows="4" placeholder="Pega aquí los valores separados por espacios o saltos de línea..." style="width: 100%; margin-top: 0.5rem; background: var(--card); border: 1px solid var(--border); color: var(--text-title); padding: 0.75rem; border-radius: 8px; font-family: monospace; resize: vertical;"></textarea>
+          </details>
+        </div>
+      </div>
+
+      <!-- PARTE 3: BOTÓN DE EJECUCIÓN -->
+      <div style="margin-top: 1.75rem;">
+        <button type="button" id="btnCalculate" class="btn-primary" style="padding: 0.95rem;">
+          EJECUTAR ANÁLISIS Y VER RESULTADOS
         </button>
       </div>
 
@@ -86,7 +118,6 @@
        VISTA 2: ESTADÍSTICA DESCRIPTIVA
        ========================================== -->
   <section id="descriptiveSection" class="view-section panel--hidden">
-    <!-- Resumen Comparativo General -->
     <section id="summarySection" class="panel panel--hidden">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2 style="font-size: 1.1rem; color: var(--text-title); letter-spacing: -0.02em;">Resumen Comparativo Univariado</h2>
@@ -110,13 +141,10 @@
       </div>
     </section>
 
-    <!-- Selector de Columnas -->
     <nav id="columnPills" class="tabs panel--hidden" style="overflow-x: auto; flex-wrap: wrap; margin-top: 1rem;"></nav>
 
-    <!-- Tarjetas KPI -->
     <section id="resultsContainer" class="results-grid" style="margin-top: 1rem;"></section>
 
-    <!-- Histograma -->
     <section id="chartSection" class="chart-container panel--hidden" style="margin-top: 1.25rem;">
       <canvas id="statsChart"></canvas>
     </section>
@@ -124,19 +152,19 @@
 
 
   <!-- ==========================================
-       VISTA 3: MATRIZ DE COVARIANZA & GRÁFICA BIVARIADA
+       VISTA 3: MATRIZ DE COVARIANZA & VISOR BIVARIADO
        ========================================== -->
   <section id="covarianceSection" class="view-section panel--hidden">
-    <!-- Panel 1: Matriz -->
+    <!-- Panel 1: Matriz de Covarianza -->
     <section class="panel">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <h2 style="font-size: 1.15rem; color: var(--text-title);">Matriz de Varianza-Covarianza Muestral</h2>
           <p style="font-size: 0.82rem; color: var(--text-body); margin-top: 0.25rem;">
-            Diagonal: varianzas muestrales (s²). Componentes no diagonales: covarianza cruzada Cov(X, Y).
+            Diagonal: varianzas muestrales (s²). Componentes fuera de la diagonal: covarianzas cruzadas Cov(X, Y) con n − 1 grados de libertad[cite: 48, 52, 53].
           </p>
         </div>
-        <span class="header__badge">Multivariate</span>
+        <span class="header__badge" id="covBadge">Multivariate</span>
       </div>
 
       <div id="covMatrixEmpty" style="padding: 2.5rem; text-align: center; color: var(--text-body); font-size: 0.9rem;">
@@ -151,41 +179,79 @@
       </div>
     </section>
 
-    <!-- Panel 2: Diagrama de Dispersión y Regresión (Matplotlib + Interactivo) -->
-    <section class="panel panel--hidden" id="scatterPanel" style="margin-top: 1.25rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <div>
-          <h2 style="font-size: 1.15rem; color: var(--text-title);">Diagrama de Dispersión & Recta de Regresión</h2>
-          <p id="scatterStatsText" style="font-size: 0.85rem; color: var(--primary-hover); font-weight: 600; margin-top: 0.2rem;"></p>
+    <!-- Panel 2: Visor Enfocado del Diagrama de Dispersión (Selección 1 a 1) -->
+    <section class="panel panel--hidden" id="scatterViewerPanel" style="margin-top: 1.25rem;">
+      <!-- Barra Superior de Control y Lista de Pares -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+        
+        <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+          <label for="pairSelectDropdown" style="color: var(--text-title); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em;">
+            Par a analizar:
+          </label>
+          
+          <!-- Lista desplegable para seleccionar entre los 66 pares -->
+          <select id="pairSelectDropdown" style="background: var(--card); color: var(--text-title); border: 1px solid var(--border); padding: 0.55rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; outline: none; cursor: pointer; max-width: 340px;">
+          </select>
+
+          <!-- Botones de navegación Anterior y Siguiente -->
+          <div style="display: flex; gap: 0.35rem;">
+            <button type="button" id="btnPrevPair" class="btn-secondary" style="padding: 0.45rem 0.8rem; font-size: 0.75rem;" title="Par anterior">
+              &larr; Ant
+            </button>
+            <button type="button" id="btnNextPair" class="btn-secondary" style="padding: 0.45rem 0.8rem; font-size: 0.75rem;" title="Par siguiente">
+              Sig &rarr;
+            </button>
+          </div>
         </div>
-        <div class="tabs" style="padding: 0.25rem;">
-          <button type="button" class="tabs__btn tabs__btn--active" id="btnShowInteractiveScatter">Interactivo (Hover)</button>
-          <button type="button" class="tabs__btn" id="btnShowPltImage">Matplotlib (PNG)</button>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="header__badge" id="scatterPairsBadge">0 Pares</span>
+          
+          <!-- Selector entre gráfico interactivo de Chart.js y render nativo de Matplotlib -->
+          <div class="tabs" style="padding: 0.2rem;">
+            <button type="button" class="tabs__btn tabs__btn--active" id="btnShowInteractiveScatter" style="padding: 0.45rem 0.85rem; font-size: 0.75rem;">Interactivo</button>
+            <button type="button" class="tabs__btn" id="btnShowPltImage" style="padding: 0.45rem 0.85rem; font-size: 0.75rem;">Matplotlib (PNG)</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tarjetas KPI del Par Activo -->
+      <div id="activePairStats" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem;">
+        <div class="metric-card" style="flex: 1; min-width: 180px; padding: 0.85rem 1.1rem; border-top-width: 2px;">
+          <span class="metric-card__title">Covarianza Muestral</span>
+          <span class="metric-card__val" id="activePairCov" style="font-size: 1.35rem;">--</span>
+        </div>
+        <div class="metric-card" style="flex: 1; min-width: 180px; padding: 0.85rem 1.1rem; border-top-width: 2px;">
+          <span class="metric-card__title">Correlación de Pearson (r)</span>
+          <span class="metric-card__val" id="activePairR" style="font-size: 1.35rem;">--</span>
+        </div>
+        <div class="metric-card" style="flex: 1.4; min-width: 240px; padding: 0.85rem 1.1rem; border-top-width: 2px;">
+          <span class="metric-card__title">Recta de Tendencia</span>
+          <span class="metric-card__val" id="activePairEq" style="font-size: 1.15rem; word-break: break-all;">--</span>
         </div>
       </div>
 
-      <!-- Vista Interactiva con coordenadas en hover -->
-      <div id="interactiveScatterContainer" style="height: 420px; width: 100%; position: relative;">
+      <!-- Gráfico Interactivo Espacioso (Chart.js) -->
+      <div id="interactiveScatterContainer" style="height: 480px; width: 100%; position: relative; margin-top: 1.25rem;">
         <canvas id="interactiveScatterChart"></canvas>
       </div>
 
-      <!-- Imagen generada por Matplotlib en backend -->
-      <div id="pltImageContainer" class="panel--hidden" style="text-align: center; padding: 1rem;">
-        <img id="pltScatterImg" src="" alt="Gráfico de Dispersión Matplotlib" style="max-width: 100%; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+      <!-- Imagen PNG generada en Backend por Matplotlib -->
+      <div id="pltImageContainer" class="panel--hidden" style="text-align: center; padding: 1rem; margin-top: 1.25rem;">
+        <img id="pltScatterImg" src="" alt="Gráfico Matplotlib" style="max-height: 480px; max-width: 100%; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
       </div>
     </section>
   </section>
 
 </main>
 
-<!-- ==========================================
-     POP-UP MODAL: CONFIGURADOR DE MÉTRICAS
-     ========================================== -->
+<!-- MODAL POP-UP DE MÉTRICAS -->
 <dialog id="metricsModal" class="metrics-modal">
   <div class="metrics-modal__header">
     <div>
       <h3 style="color: var(--text-title); font-size: 1.1rem; font-weight: 800;">Métricas de Análisis</h3>
-      <p style="font-size: 0.8rem; color: var(--text-body); margin-top: 0.2rem;">Selecciona los parámetros de cálculo estadístico requeridos</p>
+      <p style="font-size: 0.8rem; color: var(--text-body); margin-top: 0.2rem;">Parámetros estadísticos que se calcularán</p>
     </div>
     <button type="button" id="btnToggleAllMetrics" style="background: none; border: none; color: var(--primary-hover); cursor: pointer; font-size: 0.78rem; font-weight: 700;">
       Desmarcar todos
@@ -193,7 +259,6 @@
   </div>
 
   <div class="metrics-modal__body">
-    <!-- Grupo 1: Centralidad -->
     <div class="metrics-group">
       <span class="metrics-group__title">Medidas de Centralidad</span>
       <div class="metrics-list">
@@ -201,41 +266,40 @@
           <input type="checkbox" name="metric" value="mean" checked>
           <div class="metrics-item__text">
             <strong>Media Aritmética (X̄)</strong>
-            <small>Promedio aritmético balanceado de las observaciones</small>
+            <small>Promedio aritmético de los datos</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="harmonic" checked>
           <div class="metrics-item__text">
             <strong>Media Armónica (H)</strong>
-            <small>Inverso del promedio de los recíprocos de las muestras</small>
+            <small>Recíproco del promedio de los inversos</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="geometric" checked>
           <div class="metrics-item__text">
             <strong>Media Geométrica (G)</strong>
-            <small>Raíz enésima del producto de valores estrictamente positivos</small>
+            <small>Raíz enésima del producto</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="mode" checked>
           <div class="metrics-item__text">
             <strong>Moda</strong>
-            <small>Dato con mayor frecuencia o intervalo modal agrupado</small>
+            <small>Valor más frecuente o intervalo modal</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="quartiles" checked>
           <div class="metrics-item__text">
             <strong>Cuartiles y Rango Intercuartílico (IQR)</strong>
-            <small>Posición de cuartiles (Q1, Mediana/Q2, Q3) e IQR = Q3 − Q1</small>
+            <small>Q1, Mediana (Q2), Q3 e IQR = Q3 − Q1</small>
           </div>
         </label>
       </div>
     </div>
 
-    <!-- Grupo 2: Variabilidad / Dispersión -->
     <div class="metrics-group">
       <span class="metrics-group__title">Medidas de Variabilidad y Dispersión</span>
       <div class="metrics-list">
@@ -243,28 +307,28 @@
           <input type="checkbox" name="metric" value="sample_variance" checked>
           <div class="metrics-item__text">
             <strong>Varianza Muestral (s²)</strong>
-            <small>Dispersión cuadrática con divisor n − 1 (ddof = 1)</small>
+            <small>Dispersión muestral con divisor n − 1 (ddof = 1)</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="population_variance" checked>
           <div class="metrics-item__text">
             <strong>Varianza Poblacional (σ²)</strong>
-            <small>Dispersión cuadrática con divisor N (ddof = 0)</small>
+            <small>Dispersión poblacional con divisor N (ddof = 0)</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="sample_std" checked>
           <div class="metrics-item__text">
             <strong>Desviación Estándar Muestral (s)</strong>
-            <small>Raíz cuadrada de la varianza muestral (ddof = 1)</small>
+            <small>Raíz de la varianza muestral (ddof = 1)</small>
           </div>
         </label>
         <label class="metrics-item">
           <input type="checkbox" name="metric" value="population_std" checked>
           <div class="metrics-item__text">
             <strong>Desviación Estándar Poblacional (σ)</strong>
-            <small>Raíz cuadrada de la varianza poblacional (ddof = 0)</small>
+            <small>Raíz de la varianza poblacional (ddof = 0)</small>
           </div>
         </label>
       </div>

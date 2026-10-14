@@ -69,12 +69,37 @@
 
   // Tarjeta de contraste destacado (Sesgo / Distribución)
   &:first-child {
-    background: var(--contrast-card);
-    border-top-color: var(--primary-hover);
+    background: var(--card);
+    border-color: var(--border);
+  }
 
-    .metric-card__val {
-      color: var(--primary-hover);
-    }
+  &__title {
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-body);
+  }
+
+  &__val {
+    font-family: $font-family-mono;
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--text-title);
+    letter-spacing: -0.02em;
+  }
+
+  &__warn {
+    font-size: 0.72rem;
+    color: #ffaa00;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-hover);
+    box-shadow: 0 8px 22px rgba(59, 102, 172, 0.15);
   }
 }
 

@@ -1,11 +1,12 @@
 /**
  * Módulo: render.js
- * Tablas univariadas, tarjetas KPI, matriz de covarianza
- * y diagrama de dispersión bivariado interactivo con soporte de temas.
+ * Renderizado de tablas, tarjetas KPI, matriz de covarianza
+ * y visor interactivo 1 a 1 de pares bivariados con selector y navegación.
  */
 
-let scatterChartInstance = null;
-let lastBivariatePayload = null;
+let activeScatterChart = null;
+let currentBivariatePairs = [];
+let currentPairIndex = 0;
 
 const formatVal = (v) => {
   if (v === null || v === undefined || isNaN(v)) return "--";
@@ -73,18 +74,16 @@ export function renderColumnCards(columnPayload, container) {
   container.innerHTML = "";
   const { results, warnings, chart } = columnPayload;
 
-  // 1. Diagnóstico de Sesgo
   const skewCard = document.createElement("div");
   skewCard.className = "metric-card";
   skewCard.style.borderLeft = "4px solid var(--primary-hover)";
   skewCard.innerHTML = `
     <span class="metric-card__title">Distribución y Asimetría</span>
     <span class="metric-card__val" style="font-size: 1.1rem;">${chart.skewness}</span>
-    <span class="metric-card__warn" style="color: var(--primary-hover);">Muestras: N = ${chart.n}</span>
+    <span class="metric-card__warn" style="color: var(--primary-hover);">Muestras analizadas: N = ${chart.n}</span>
   `;
   container.appendChild(skewCard);
 
-  // 2. Centralidad
   if ("mean" in results) container.appendChild(createCard("Media Aritmética (X̄)", formatVal(results.mean)));
   if ("harmonic" in results) container.appendChild(createCard("Media Armónica (H)", formatVal(results.harmonic), warnings.harmonic));
   if ("geometric" in results) container.appendChild(createCard("Media Geométrica (G)", formatVal(results.geometric), warnings.geometric));
@@ -101,7 +100,6 @@ export function renderColumnCards(columnPayload, container) {
     container.appendChild(createCard("Rango Intercuartílico (IQR)", formatVal(q.iqr), `Q1: ${q.q1.toFixed(2)} | Q3: ${q.q3.toFixed(2)}`));
   }
 
-  // 3. Dispersión
   if ("sample_variance" in results) container.appendChild(createCard("Varianza Muestral (s²)", formatVal(results.sample_variance)));
   if ("population_variance" in results) container.appendChild(createCard("Varianza Poblacional (σ²)", formatVal(results.population_variance)));
   if ("sample_std" in results) container.appendChild(createCard("Desv. Estándar Muestral (s)", formatVal(results.sample_std)));
@@ -148,32 +146,63 @@ export function renderCovarianceMatrix(covPayload) {
   tbody.innerHTML = bodyHtml;
 }
 
-export function renderBivariateScatter(bivariatePayload) {
-  lastBivariatePayload = bivariatePayload;
-
-  const panel = document.getElementById("scatterPanel");
-  const statsText = document.getElementById("scatterStatsText");
-  const imgElement = document.getElementById("pltScatterImg");
-  const canvas = document.getElementById("interactiveScatterChart");
+/**
+ * Inicializa el visor bivariado poblando la lista desplegable y activando el primer par
+ */
+export function renderAllBivariatePlots(pairsList) {
+  const panel = document.getElementById("scatterViewerPanel");
+  const dropdown = document.getElementById("pairSelectDropdown");
+  const badge = document.getElementById("scatterPairsBadge");
+  const btnPrev = document.getElementById("btnPrevPair");
+  const btnNext = document.getElementById("btnNextPair");
 
   const btnInteractive = document.getElementById("btnShowInteractiveScatter");
   const btnPlt = document.getElementById("btnShowPltImage");
   const contInteractive = document.getElementById("interactiveScatterContainer");
   const contPlt = document.getElementById("pltImageContainer");
 
-  if (!bivariatePayload || !panel) {
+  if (!pairsList || !pairsList.length || !panel) {
     if (panel) panel.classList.add("panel--hidden");
     return;
   }
 
+  currentBivariatePairs = pairsList;
+  currentPairIndex = 0;
+
   panel.classList.remove("panel--hidden");
-  if (statsText) {
-    statsText.textContent = `Cov = ${bivariatePayload.cov.toFixed(4)} | r (Pearson) = ${bivariatePayload.r.toFixed(4)} | Tendencia: ${bivariatePayload.equation}`;
-  }
-  if (imgElement) {
-    imgElement.src = bivariatePayload.image_base64;
+  if (badge) badge.textContent = `${pairsList.length} Pares Disponibles`;
+
+  // Poblar la lista desplegable con los nombres de los pares y su valor de correlación
+  if (dropdown) {
+    dropdown.innerHTML = "";
+    pairsList.forEach((pair, idx) => {
+      const opt = document.createElement("option");
+      opt.value = idx;
+      opt.textContent = `${idx + 1}. ${pair.pair_name}  (r = ${pair.r.toFixed(4)})`;
+      dropdown.appendChild(opt);
+    });
+
+    dropdown.onchange = () => {
+      renderSpecificBivariateIndex(parseInt(dropdown.value, 10));
+    };
   }
 
+  // Controles de navegación Anterior / Siguiente
+  if (btnPrev && btnNext) {
+    btnPrev.onclick = () => {
+      if (currentPairIndex > 0) {
+        renderSpecificBivariateIndex(currentPairIndex - 1);
+      }
+    };
+
+    btnNext.onclick = () => {
+      if (currentPairIndex < currentBivariatePairs.length - 1) {
+        renderSpecificBivariateIndex(currentPairIndex + 1);
+      }
+    };
+  }
+
+  // Conmutador entre Interactivo y Matplotlib
   if (btnInteractive && btnPlt && contInteractive && contPlt) {
     btnInteractive.onclick = () => {
       btnInteractive.classList.add("tabs__btn--active");
@@ -190,33 +219,69 @@ export function renderBivariateScatter(bivariatePayload) {
     };
   }
 
-  if (!canvas) return;
-  if (scatterChartInstance) scatterChartInstance.destroy();
+  // Renderizar el primer par seleccionado
+  renderSpecificBivariateIndex(0);
+}
 
-  // Detección estricta del tema actual
+/**
+ * Renderiza la gráfica y estadísticas del par seleccionado en el visor
+ */
+function renderSpecificBivariateIndex(index) {
+  if (index < 0 || index >= currentBivariatePairs.length) return;
+  currentPairIndex = index;
+
+  const pairData = currentBivariatePairs[index];
+  const dropdown = document.getElementById("pairSelectDropdown");
+  const btnPrev = document.getElementById("btnPrevPair");
+  const btnNext = document.getElementById("btnNextPair");
+
+  // Sincronizar el valor de la lista y el estado de los botones
+  if (dropdown) dropdown.value = index;
+  if (btnPrev) btnPrev.disabled = index === 0;
+  if (btnNext) btnNext.disabled = index === currentBivariatePairs.length - 1;
+
+  // Actualizar tarjetas de métricas del par
+  const valCov = document.getElementById("activePairCov");
+  const valR = document.getElementById("activePairR");
+  const valEq = document.getElementById("activePairEq");
+  const imgPlt = document.getElementById("pltScatterImg");
+
+  if (valCov) valCov.textContent = pairData.cov.toFixed(4);
+  if (valR) valR.textContent = pairData.r.toFixed(4);
+  if (valEq) valEq.textContent = pairData.equation;
+  if (imgPlt) imgPlt.src = pairData.image_base64;
+
+  // Renderizar la gráfica en el canvas interactivo
+  const canvas = document.getElementById("interactiveScatterChart");
+  if (!canvas) return;
+
+  if (activeScatterChart) {
+    activeScatterChart.destroy();
+  }
+
   const isDark = (document.documentElement.getAttribute("data-theme") || "dark") === "dark";
   const textColor = isDark ? "#ffffff" : "#1e1f24";
   const gridColor = isDark ? "rgba(39, 72, 125, 0.45)" : "rgba(205, 206, 215, 0.6)";
 
-  scatterChartInstance = new Chart(canvas, {
+  activeScatterChart = new Chart(canvas, {
     type: "scatter",
     data: {
       datasets: [
         {
-          label: "Observaciones (x, y)",
-          data: bivariatePayload.points,
-          backgroundColor: "#8cb7fc",
-          borderColor: isDark ? "#ffffff" : "#3b66ac",
-          borderWidth: 1.2,
-          pointRadius: 6,
-          pointHoverRadius: 9
+          label: `Muestras (${pairData.col_x}, ${pairData.col_y})`,
+          data: pairData.points,
+          backgroundColor: pairData.colors.point,
+          borderColor: isDark ? "#ffffff" : "#112340",
+          borderWidth: 1.5,
+          pointRadius: 6.5,
+          pointHoverRadius: 9.5
         },
         {
-          label: `Línea de tendencia (${bivariatePayload.equation})`,
-          data: bivariatePayload.trend_line,
+          label: `Tendencia (${pairData.equation})`,
+          data: pairData.trend_line,
           type: "line",
-          borderColor: "#ff6b6b",
-          borderWidth: 2,
+          borderColor: pairData.colors.line,
+          borderWidth: 2.4,
           borderDash: [6, 6],
           pointRadius: 0,
           fill: false
@@ -229,7 +294,7 @@ export function renderBivariateScatter(bivariatePayload) {
       plugins: {
         tooltip: {
           callbacks: {
-            label: (ctx) => `(${bivariatePayload.col_x}: ${ctx.parsed.x.toFixed(2)}, ${bivariatePayload.col_y}: ${ctx.parsed.y.toFixed(2)})`
+            label: (ctx) => `(${pairData.col_x}: ${ctx.parsed.x.toFixed(2)}, ${pairData.col_y}: ${ctx.parsed.y.toFixed(2)})`
           }
         },
         legend: {
@@ -243,27 +308,21 @@ export function renderBivariateScatter(bivariatePayload) {
         x: {
           title: {
             display: true,
-            text: bivariatePayload.col_x,
+            text: pairData.col_x,
             color: textColor,
             font: { size: 12, weight: "bold" }
           },
-          ticks: {
-            color: textColor,
-            font: { size: 11, weight: "600" }
-          },
+          ticks: { color: textColor, font: { size: 11, weight: "600" } },
           grid: { color: gridColor }
         },
         y: {
           title: {
             display: true,
-            text: bivariatePayload.col_y,
+            text: pairData.col_y,
             color: textColor,
             font: { size: 12, weight: "bold" }
           },
-          ticks: {
-            color: textColor,
-            font: { size: 11, weight: "600" }
-          },
+          ticks: { color: textColor, font: { size: 11, weight: "600" } },
           grid: { color: gridColor }
         }
       }
@@ -271,33 +330,26 @@ export function renderBivariateScatter(bivariatePayload) {
   });
 }
 
-/**
- * Actualiza los colores del gráfico de dispersión cuando cambia el tema
- */
 export function updateScatterTheme(isDark) {
-  if (!scatterChartInstance) return;
+  if (!activeScatterChart) return;
 
   const textColor = isDark ? "#ffffff" : "#1e1f24";
   const gridColor = isDark ? "rgba(39, 72, 125, 0.45)" : "rgba(205, 206, 215, 0.6)";
 
-  // Actualizar leyenda
-  scatterChartInstance.options.plugins.legend.labels.color = textColor;
+  activeScatterChart.options.plugins.legend.labels.color = textColor;
+  activeScatterChart.options.scales.x.title.color = textColor;
+  activeScatterChart.options.scales.x.ticks.color = textColor;
+  activeScatterChart.options.scales.x.grid.color = gridColor;
 
-  // Actualizar ejes X e Y
-  scatterChartInstance.options.scales.x.title.color = textColor;
-  scatterChartInstance.options.scales.x.ticks.color = textColor;
-  scatterChartInstance.options.scales.x.grid.color = gridColor;
+  activeScatterChart.options.scales.y.title.color = textColor;
+  activeScatterChart.options.scales.y.ticks.color = textColor;
+  activeScatterChart.options.scales.y.grid.color = gridColor;
 
-  scatterChartInstance.options.scales.y.title.color = textColor;
-  scatterChartInstance.options.scales.y.ticks.color = textColor;
-  scatterChartInstance.options.scales.y.grid.color = gridColor;
-
-  // Actualizar borde de puntos para contraste
-  if (scatterChartInstance.data.datasets[0]) {
-    scatterChartInstance.data.datasets[0].borderColor = isDark ? "#ffffff" : "#3b66ac";
+  if (activeScatterChart.data.datasets[0]) {
+    activeScatterChart.data.datasets[0].borderColor = isDark ? "#ffffff" : "#112340";
   }
 
-  scatterChartInstance.update();
+  activeScatterChart.update();
 }
 
 function createCard(title, val, warn = null) {
